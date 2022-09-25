@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AzureServicesDemo
+namespace AzureServicesDemo.FunctionTriggers
 {
     public static class HttpExample
     {
@@ -28,7 +28,7 @@ namespace AzureServicesDemo
             //return new OkObjectResult(responseMessage);
             #endregion
             // Function input comes from the request content.
-            string instanceId = await starter.StartNewAsync("DurableFunction_ChainingPattern", null);
+            string instanceId = await starter.StartNewAsync("FanOutFanInPattern", null);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 
