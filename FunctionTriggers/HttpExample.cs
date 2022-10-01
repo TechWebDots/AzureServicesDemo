@@ -10,7 +10,7 @@ namespace AzureServicesDemo.FunctionTriggers
 {
     public static class HttpExample
     {
-        [FunctionName("HttpExample")]
+        //[FunctionName("HttpExample")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,

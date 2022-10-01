@@ -8,7 +8,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public static class ChainingPattern
     {
-        [FunctionName("ChainingPattern")]
+        //[FunctionName("ChainingPattern")]
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
@@ -23,7 +23,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             return outputs;
         }
 
-        [FunctionName("ChainingPattern_Hello")]
+        //[FunctionName("ChainingPattern_Hello")]
         public static string SayHello([ActivityTrigger] string name, ILogger log)
         {
             log.LogInformation($"Saying hello to {name}.");

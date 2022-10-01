@@ -9,7 +9,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public static class FanOutFanInPattern
     {
-        [FunctionName("FanOutFanInPattern")]
+        //[FunctionName("FanOutFanInPattern")]
         public static async Task<string> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
@@ -30,21 +30,21 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             return await context.CallActivityAsync<string>("F3", sum);
         }
 
-        [FunctionName("F1")]
+        //[FunctionName("F1")]
         public static object[] F1([ActivityTrigger] string name, ILogger log)
         {
             log.LogInformation($"Saying hello to F1.");
             return new object[5];
         }
 
-        [FunctionName("F2")]
+        //[FunctionName("F2")]
         public static int F2([ActivityTrigger] object workBatch, ILogger log)
         {
             log.LogInformation($"Saying hello to {workBatch}.");
             return 1;
         }
 
-        [FunctionName("F3")]
+        //[FunctionName("F3")]
         public static string F3([ActivityTrigger] int sum, ILogger log)
         {
             log.LogInformation($"Sum of all {sum}.");
