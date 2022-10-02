@@ -10,7 +10,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public static class AsyncHttpApiPattern
     {
-        [FunctionName("AsyncHttpApiPattern")]
+        //[FunctionName("AsyncHttpApiPattern")]
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
@@ -25,14 +25,14 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             return outputs;
         }
 
-        [FunctionName("AsyncHttpApiPattern_Hello")]
+        //[FunctionName("AsyncHttpApiPattern_Hello")]
         public static string SayHello([ActivityTrigger] string name, ILogger log)
         {
             log.LogInformation($"Saying hello to {name}.");
             return $"Hello {name}!";
         }
 
-        [FunctionName("AsyncHttpApiPattern_HttpStart")]
+        //[FunctionName("AsyncHttpApiPattern_HttpStart")]
         public static async Task<HttpResponseMessage> HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestMessage req,
             [DurableClient] IDurableOrchestrationClient starter,
