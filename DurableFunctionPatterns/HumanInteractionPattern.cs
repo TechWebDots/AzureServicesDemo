@@ -82,7 +82,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             log.LogInformation(message);
         }
 
-        [FunctionName("ApprovalEvent")]
+        [FunctionName("RaiseApprovalEvent")]
         public static async Task ApprovalEvent(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,
@@ -91,8 +91,9 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             string instanceId = await StreamToStringAsync(req);
 
             log.LogInformation($"To raise event, Orchestration ID = '{instanceId}'.");
-
-            await starter.RaiseEventAsync(instanceId, "ApprovalEvent", false);
+            // Add basic logic required to calculate the approval
+            bool isApproved = true;
+            await starter.RaiseEventAsync(instanceId, "ApprovalEvent", isApproved);
         }
 
         private static async Task<string> StreamToStringAsync(HttpRequest request)
