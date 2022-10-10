@@ -13,7 +13,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public class MonitorPattern
     {
-        [FunctionName("MonitorPattern_HttpStart")]
+        //[FunctionName("MonitorPattern_HttpStart")]
         public async Task<IActionResult> MonitorPattern_HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,
@@ -47,7 +47,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             public DateTime ExpiryTime { get; set; }
         }
 
-        [FunctionName("MonitorJobStatus")]
+        //[FunctionName("MonitorJobStatus")]
         public async Task MonitorJobStatus(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {
@@ -75,14 +75,14 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             // Perform more work here, or let the orchestration end.
         }        
 
-        [FunctionName("SendAlert")]
+        //[FunctionName("SendAlert")]
         public void SendAlert([ActivityTrigger] string message)
         {
             // Send Alert message via kind of MessageSender lib/ any 3rd party
             // TelemetryClient.TrackTrace(message);
         }
 
-        [FunctionName(nameof(GetJobStatus))]
+        //[FunctionName(nameof(GetJobStatus))]
         public Task<string> GetJobStatus([ActivityTrigger] IDurableActivityContext context)
         {
             var jobId = context.GetInput<string>();
