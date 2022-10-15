@@ -13,7 +13,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public class HumanInteractionPattern
     {
-        [FunctionName("HumanInteractionPattern")]
+        //[FunctionName("HumanInteractionPattern")]
         public async Task<IActionResult> HumanInteractionPattern_HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,
@@ -26,13 +26,15 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             return starter.CreateCheckStatusResponse(req, instanceId);
         }
 
-        [FunctionName("ApprovalWorkflow")]
+        //[FunctionName("ApprovalWorkflow")]
         public static async Task Run([OrchestrationTrigger] IDurableOrchestrationContext context)
         {
-            // you can pass some data that you want to send in your request approval
+            // you can pass imp data that you want to send in your request approval, email/sms
+            // In return you can get some secret response as well, like a phone verification code
             await context.CallActivityAsync("RequestApproval", "Email");
             using (var timeoutCts = new CancellationTokenSource())
             {
+                // The user has 3 days to respond to mail (or with the code they received in the SMS message)
                 DateTime dueTime = context.CurrentUtcDateTime.AddHours(72);
                 // create the durable timer
                 Task durableTimeout = context.CreateTimer(dueTime, timeoutCts.Token);
@@ -44,6 +46,7 @@ namespace AzureServicesDemo.DurableFunctionPatterns
                 if (approvalEvent == await Task.WhenAny(approvalEvent, durableTimeout))
                 {
                     timeoutCts.Cancel();
+                    // here we can also check approvalEvent.Result is the OTP code
                     await context.CallActivityAsync("ProcessApproval", approvalEvent.Result);
                 }
                 else
@@ -53,15 +56,15 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             }
         }
 
-        [FunctionName("RequestApproval")]
+        //[FunctionName("RequestApproval")]
         public static void RequestApproval([ActivityTrigger]string message, ILogger log)
         {
-            // TODO: Send an email or some notification
+            // TODO: Send an email-using TwilioSms/verification code or some notification
             log.LogInformation(string.Format("{0} Send to Manager!", message));
             return;
         }               
 
-        [FunctionName("ProcessApproval")]
+        //[FunctionName("ProcessApproval")]
         public static void ProcessApproval([ActivityTrigger] bool isApproved, ILogger log)
         {
             // TODO: Check Decision
@@ -75,14 +78,14 @@ namespace AzureServicesDemo.DurableFunctionPatterns
             }            
         }
 
-        [FunctionName("Escalate")]
+        //[FunctionName("Escalate")]
         public static void Escalate([ActivityTrigger]string message, ILogger log)
         {
-            // TODO: Send an email Sr Manager or NEXT Level
+            // TODO: Send an Email Sr Manager or NEXT Level
             log.LogInformation(message);
         }
 
-        [FunctionName("RaiseApprovalEvent")]
+        //[FunctionName("RaiseApprovalEvent")]
         public static async Task ApprovalEvent(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,
