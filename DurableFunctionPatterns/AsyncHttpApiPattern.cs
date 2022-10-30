@@ -10,29 +10,8 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 {
     public static class AsyncHttpApiPattern
     {
-        //[FunctionName("AsyncHttpApiPattern")]
-        public static async Task<List<string>> RunOrchestrator(
-            [OrchestrationTrigger] IDurableOrchestrationContext context)
-        {
-            var outputs = new List<string>();
-
-            // Replace "hello" with the name of your Durable Activity Function.
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "Tokyo"));
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "Seattle"));
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "London"));
-
-            // returns ["Hello Tokyo!", "Hello Seattle!", "Hello London!"]
-            return outputs;
-        }
-
-        //[FunctionName("AsyncHttpApiPattern_Hello")]
-        public static string SayHello([ActivityTrigger] string name, ILogger log)
-        {
-            log.LogInformation($"Saying hello to {name}.");
-            return $"Hello {name}!";
-        }
-
-        //[FunctionName("AsyncHttpApiPattern_HttpStart")]
+        #region Client Function for Deterministic API
+        [FunctionName("AsyncHttpApiPattern_HttpStart")]
         public static async Task<HttpResponseMessage> HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestMessage req,
             [DurableClient] IDurableOrchestrationClient starter,
@@ -45,5 +24,48 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 
             return starter.CreateCheckStatusResponse(req, instanceId);
         }
+        #endregion
+
+        #region Orchestration Function
+        [FunctionName("AsyncHttpApiPattern")]
+        public static async Task<List<string>> RunOrchestrator(
+            [OrchestrationTrigger] IDurableOrchestrationContext context)
+        {
+            var outputs = new List<string>();
+
+            // Replace "hello" with the name of your Durable Activity Function.
+            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "Tokyo"));
+            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "Delhi"));
+            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_Hello", "London"));
+
+            //Correct way of using DateTime
+            var currentUtcDateTime = context.CurrentUtcDateTime;
+
+            //Correct way of using Guid
+            var newGuid = context.NewGuid();
+
+            // returns ["Hello Tokyo!", "Hello Delhi!", "Hello London!"]
+            return outputs;
+        }
+        #endregion
+
+        #region Activity Function Version 1
+        //[FunctionName("AsyncHttpApiPattern_Hello")]
+        //public static string SayHello([ActivityTrigger] string name, ILogger log)
+        //{
+        //    log.LogInformation($"Saying hello to {name}.");
+        //    return $"Hello {name}!";
+        //}
+        #endregion
+
+        #region Activity Function Version 2
+        [FunctionName("AsyncHttpApiPattern_Hello")]
+        public static string SayHello([ActivityTrigger] IDurableActivityContext activityContext, ILogger log)
+        {
+            string name = activityContext.GetInput<string>();
+            log.LogInformation($"Saying hello to {name}.");
+            return $"Hello {name}!";
+        }
+        #endregion
     }
 }

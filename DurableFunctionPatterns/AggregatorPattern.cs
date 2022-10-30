@@ -27,13 +27,14 @@ namespace AzureServicesDemo.DurableFunctionPatterns
 
         public void Delete() => Entity.Current.DeleteState();
 
-        [FunctionName(nameof(Counter))]
+        // Entity Function
+        //[FunctionName(nameof(Counter))]
         public static Task Run([EntityTrigger] IDurableEntityContext ctx)
             => ctx.DispatchAsync<Counter>();
     }
     public static class AggregatorPattern
     {
-        [FunctionName("GetCounter")]
+        //[FunctionName("GetCounter")]
         public static async Task<HttpResponseMessage> GetCounter(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Counter/{entityKey}")] HttpRequestMessage req,
         [DurableClient] IDurableEntityClient client,
