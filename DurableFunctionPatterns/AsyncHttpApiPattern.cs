@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DurableTask.Core.Exceptions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -33,22 +32,29 @@ namespace AzureServicesDemo.DurableFunctionPatterns
         public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context, ILogger log)
         {
-            log.LogInformation($"OrchestrationTrigger Started.");
-            var outputs = new List<string>();
+            try
+            {
+                log.LogInformation($"OrchestrationTrigger Started.");
+                var outputs = new List<string>();
 
-            // Replace "hello" with the name of your Durable Activity Function.
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "Tokyo"));
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "Delhi"));
-            outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "London"));                        
+                // Replace "hello" with the name of your Durable Activity Function.
+                outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "Tokyo"));
+                outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "Delhi"));
+                outputs.Add(await context.CallActivityAsync<string>("AsyncHttpApiPattern_ActivityTrigger", "London"));
 
-            //Correct way of using DateTime
-            var currentUtcDateTime = context.CurrentUtcDateTime;
+                //Correct way of using DateTime
+                var currentUtcDateTime = context.CurrentUtcDateTime;
 
-            //Correct way of using Guid
-            var newGuid = context.NewGuid();
+                //Correct way of using Guid
+                var newGuid = context.NewGuid();
 
-            // returns ["Hello Tokyo!", "Hello Delhi!", "Hello London!"]
-            return outputs;
+                // returns ["Hello Tokyo!", "Hello Delhi!", "Hello London!"]
+                return outputs;
+            }    
+            catch (Exception)
+            {
+                throw;
+            }
         }
         #endregion
 
